@@ -35,5 +35,5 @@ jobs:
       - name: Upload kernel
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: "LPoS ${{ env.KERNEL_VERSION }} [S10 5G]"
+          name: "LPoS ${{ env.KERNEL_VERSION }} [S10+]"
           path: out/*.xz
