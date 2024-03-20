@@ -187,7 +187,7 @@ build_ksu(){
         cd "$work_dir"
         echo -e "\n\n[+] Compiling KernelSU + Enforcing..\n\n"
         make ${ARGS} "$exynos_defconfig"
-        make ${ARGS} -j"$(nproc)"
+        make ${ARGS} -j"$(nproc)" || exit 1
         dtb_img
         mv "$work_dir/arch/arm64/boot/Image" "$dt_tool/AIK/split_img/boot.img-kernel"
         checks_ksu
