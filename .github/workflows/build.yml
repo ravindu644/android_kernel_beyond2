@@ -68,6 +68,7 @@ jobs:
           disable_web_page_preview: false
           message: |
             <b>New Kernel Build found..! 🎉</b>
+            
             <b>Device :</b> S10+ (beyond2)   
             <b>Kernel Version :</b> ${{ env.LPOS_KERNEL_VERSION }}                    
             <b>Repository:</b> <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a>
