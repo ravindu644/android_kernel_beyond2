@@ -1,17 +1,20 @@
-name: build and release
+name: Build Kernel
 
 on:
+  push:
   workflow_dispatch:
     inputs:      
       tag:
         description: 'Release Tag'
-        required: true        
+        required: true    
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write    
+    strategy:
+      fail-fast: true
+      matrix:
+        device: [S10-5G, S10, S10+, S10e]
 
     steps:
       - name: Checkout source
@@ -21,41 +24,49 @@ jobs:
 
       - name: Install packages & setup
         run: |
-          sudo apt update -y   
-          sudo apt install libncurses5-dev python2 libtinfo5 -y      
-          bash init_clang_13.sh
-          
-      - name: Set environment variable
-        run: |
+          sudo apt update -y
+          sudo apt install libssl-dev libncurses5-dev python2 libtinfo5 -y
+          git clone --depth=1 https://github.com/ghazzor/proton-12 toolchain
           echo "LPOS_KERNEL_VERSION=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
-          
-      - name: Building LPoS
-        run: |
           export PATH=$HOME/:$PWD/toolchain/bin:$PATH
-          bash build_kernel.sh -c
-
+      - name: Building LPOS ${{ matrix.device }}
+        run: |
+          DEVICE=${{ matrix.device }} ./build.sh
       - name: Building LPoS + KernelSU
         run: |
-          export PATH=$HOME/:$PWD/toolchain/bin:$PATH
-          bash build_kernel.sh -k          
-
-      - name: Upload kernel
+          DEVICE=${{ matrix.device }} ./build.sh -k
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "LPoS-${{ env.LPOS_KERNEL_VERSION }}-[S10+]"
+          name: "LPOS_${{ matrix.device }}"
           path: |
             out/LPoS*.zip
-            out/KSU*.zip
+            out/KSU*.zip          
+  upload:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
 
+      - uses: actions/download-artifact@v4
+      - name: Display structure of downloaded files
+        run: |
+          ls -R
+          mkdir -p out      
+          for folder in "LPOS_S10" "LPOS_S10+" "LPOS_S10-5G" "LPOS_S10e"; do
+              cd $folder
+              cp *.zip ../out
+              cd ..
+          done
       - name: Create release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.event.inputs.tag }}
-          name: "LPoS Kernel ${{ env.LPOS_KERNEL_VERSION }}"
+          name: "LPoS Kernel-${{ github.event.inputs.tag }}"
           draft: false
           prerelease: false
           token: ${{ secrets.TOKEN }}          
-          artifacts: "out/LPoS*.zip,out/KSU*.zip"
+          artifacts: |
+            out/*.zip
           body: "Commit SHA: ${{ github.sha }}"
 
       - name: Upload to Telegram
@@ -63,14 +74,15 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          document: "out/LPoS*.zip,out/KSU*.zip"
+          document: |
+            out/*.zip
           format: html
           disable_web_page_preview: false
           message: |
             <b>New Kernel Build found..! 🎉</b>
             
-            <b>Device :</b> S10+ (beyond2)   
-            <b>Kernel Version :</b> ${{ env.LPOS_KERNEL_VERSION }}                    
+            <b>Devices :</b> <b>Global</b> S10e, S10, S10+, <b>Korean</b> S10 5G
+            <b>Kernel Version :</b> ${{ github.event.inputs.tag }}                    
             <b>Repository:</b> <a href="https://github.com/${{ github.repository }}">${{ github.repository }}</a>
             
             <b>Commit SHA:</b> <a href="https://github.com/${{ github.repository }}/commit/${{github.sha}}">Click here</a>
