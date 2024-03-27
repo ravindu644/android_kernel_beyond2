@@ -15,6 +15,15 @@ if [ -z "$LPOS_KERNEL_VERSION" ]; then
     export LPOS_KERNEL_VERSION="dev"
 fi
 
+#placing stock_defconfig
+
+if [ -f "${WDIR}/arch/arm64/configs/stock_defconfig" ];
+    rm "${WDIR}/arch/arm64/configs/stock_defconfig"
+fi
+cp "${WDIR}/arch/arm64/configs/${DEVICE}/stock_defconfig" "${WDIR}/arch/arm64/configs/stock_defconfig"
+
+#swapping samsung tz driver
+
 if [ -d "${WDIR}/drivers/misc/tzdev" ]; then
     rm -rf "${WDIR}/drivers/misc/tzdev" || true
 fi
@@ -30,6 +39,8 @@ fi
 if [ ! -f "$HOME/python" ]; then
     ln -s /usr/bin/python2.7 "$HOME/python"
 fi
+
+#setting up variables
 
 export CONFIG="${DEVICE}_defconfig"
 export AIK="${WDIR}/binaries/${DEVICE}/AIK"
@@ -122,6 +133,8 @@ ksu(){
 case "$1" in
     "-k")
         ksu ;;
+    "-c") 
+        make ${ARGS} clean && make ${ARGS} mrproper;;
     *)
         lpos ;;
 esac
