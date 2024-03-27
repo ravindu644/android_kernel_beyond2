@@ -17,7 +17,7 @@ fi
 
 #placing stock_defconfig
 
-if [ -f "${WDIR}/arch/arm64/configs/stock_defconfig" ];
+if [ -f "${WDIR}/arch/arm64/configs/stock_defconfig" ]; then
     rm "${WDIR}/arch/arm64/configs/stock_defconfig"
 fi
 cp "${WDIR}/arch/arm64/configs/${DEVICE}/stock_defconfig" "${WDIR}/arch/arm64/configs/stock_defconfig"
