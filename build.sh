@@ -115,8 +115,6 @@ packing() {
     echo -e "\n\n[i] Compilation Done for ${DEVICE}..🌛"    
 }
 
-make ${ARGS} distclean
-
 lpos(){
     export FILE_NAME="LPoS-${DEVICE}-${LPOS_KERNEL_VERSION}"    
     patch_ksu
