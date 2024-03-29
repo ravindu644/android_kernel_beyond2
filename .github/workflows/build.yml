@@ -76,8 +76,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           document: |
-            out/LPoS*.zip
-            out/KSU*.zip
+            out/*.zip
           format: html
           disable_web_page_preview: false
           message: |
