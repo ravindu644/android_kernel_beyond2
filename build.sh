@@ -40,6 +40,14 @@ if [ ! -f "$HOME/python" ]; then
     ln -s /usr/bin/python2.7 "$HOME/python"
 fi
 
+# S or N ?
+
+if [ "${DEVICE:0:1}" = "S" ]; then
+    export SOC=exynos9820
+elif [ "${DEVICE:0:1}" = "N" ]; then
+    export SOC=exynos9825
+fi
+
 #setting up variables
 
 export CONFIG="${DEVICE}_defconfig"
@@ -81,7 +89,7 @@ patch_ksu(){
 }
 
 dtb() {
-    $MKDTIMG cfg_create "${WDIR}/out/dt.img" "${WDIR}/binaries/exynos9820.cfg" -d "${WDIR}/arch/arm64/boot/dts/exynos"
+    $MKDTIMG cfg_create "${WDIR}/out/dt.img" "${WDIR}/binaries/${SOC}.cfg" -d "${WDIR}/arch/arm64/boot/dts/exynos"
 }
 
 packing() {
