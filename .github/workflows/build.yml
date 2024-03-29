@@ -66,7 +66,8 @@ jobs:
           prerelease: false
           token: ${{ secrets.TOKEN }}          
           artifacts: |
-            out/*.zip
+            out/LPoS*.zip
+            out/KSU*.zip   
           body: "Commit SHA: ${{ github.sha }}"
 
       - name: Upload to Telegram
@@ -75,7 +76,8 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           document: |
-            out/*.zip
+            out/LPoS*.zip
+            out/KSU*.zip
           format: html
           disable_web_page_preview: false
           message: |

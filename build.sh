@@ -120,6 +120,18 @@ lpos(){
     packing
 }
 
+lpos_p(){
+    export FILE_NAME="LPoS-${DEVICE}[Permissive]-${LPOS_KERNEL_VERSION}"    
+    make ${ARGS} distclean
+    patch_ksu
+    make ${ARGS} ${CONFIG} lpos_p.config
+    make ${ARGS} menuconfig
+    make ${ARGS} -j$(nproc) || exit 1
+    dtb
+    mv "${WDIR}/arch/arm64/boot/Image" "${AIK}/split_img/boot.img-kernel"
+    packing
+}
+
 ksu(){
     export FILE_NAME="KSU-LPoS-${DEVICE}-${LPOS_KERNEL_VERSION}"
     make ${ARGS} ${CONFIG} lpos_ksu.config
@@ -130,11 +142,23 @@ ksu(){
     packing  
 }
 
+ksu(){
+    export FILE_NAME="KSU-LPoS-${DEVICE}[Permissive]-${LPOS_KERNEL_VERSION}"
+    make ${ARGS} ${CONFIG} ksu_p.config
+    make ${ARGS} menuconfig
+    make ${ARGS} -j$(nproc) || exit 1
+    dtb
+    mv "${WDIR}/arch/arm64/boot/Image" "${AIK}/split_img/boot.img-kernel"
+    packing  
+}
+
 case "$1" in
     "-k")
-        ksu ;;
+        ksu
+        ksu_p ;;
     "-c") 
         make ${ARGS} clean && make ${ARGS} mrproper;;
     *)
-        lpos ;;
+        lpos
+        lpos_p ;;
 esac
