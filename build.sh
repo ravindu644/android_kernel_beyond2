@@ -115,10 +115,10 @@ packing() {
     echo -e "\n\n[i] Compilation Done for ${DEVICE}..🌛"    
 }
 
+make ${ARGS} distclean
 
 lpos(){
     export FILE_NAME="LPoS-${DEVICE}-${LPOS_KERNEL_VERSION}"    
-    make ${ARGS} distclean
     patch_ksu
     make ${ARGS} ${CONFIG} lpos.config
     make ${ARGS} menuconfig
@@ -129,8 +129,8 @@ lpos(){
 }
 
 lpos_p(){
+    echo -e "\n[+] Permissive time..!"
     export FILE_NAME="LPoS-${DEVICE}[Permissive]-${LPOS_KERNEL_VERSION}"    
-    make ${ARGS} distclean
     patch_ksu
     make ${ARGS} ${CONFIG} lpos_p.config
     make ${ARGS} menuconfig
@@ -150,7 +150,8 @@ ksu(){
     packing  
 }
 
-ksu(){
+ksu_p(){
+    echo -e "\n[+] Permissive time..!"    
     export FILE_NAME="KSU-LPoS-${DEVICE}[Permissive]-${LPOS_KERNEL_VERSION}"
     make ${ARGS} ${CONFIG} ksu_p.config
     make ${ARGS} menuconfig
